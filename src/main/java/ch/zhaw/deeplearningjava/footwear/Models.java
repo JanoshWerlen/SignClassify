@@ -27,7 +27,7 @@ import java.util.List;
 public final class Models {
 
     // the number of classification labels: boots, sandals, shoes, slippers
-    public static final int NUM_OF_OUTPUT = 4;
+    public static final int NUM_OF_OUTPUT = 2;
 
     // the height and width for pre-processing of the image
     public static final int IMAGE_HEIGHT = 100;
@@ -50,6 +50,7 @@ public final class Models {
                         .setNumLayers(50)
                         .setOutSize(NUM_OF_OUTPUT)
                         .build();
+
 
         // set the neural network to the model
         model.setBlock(resNet50);

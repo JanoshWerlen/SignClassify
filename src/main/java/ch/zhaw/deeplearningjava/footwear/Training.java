@@ -56,7 +56,7 @@ public final class Training {
 
         // create ImageFolder dataset from directory
         // ImageFolder dataset = initDataset("ut-zap50k-images-square");
-        ImageFolder dataset = initDataset("ut-zap50k-images-square-small");
+        ImageFolder dataset = initDataset("streetsigndata-small");
         // Split the dataset set into training dataset and validate dataset
         RandomAccessDataset[] datasets = dataset.randomSplit(8, 2);
 
@@ -66,7 +66,7 @@ public final class Training {
         // higher numbers are bad - means model performed poorly; indicates more errors;
         // want to
         // minimize errors (loss)
-        Loss loss = Loss.softmaxCrossEntropyLoss();
+        Loss loss = Loss.sigmoidBinaryCrossEntropyLoss();
 
         // setting training parameters (ie hyperparameters)
         TrainingConfig config = setupTrainingConfig(loss);
@@ -100,24 +100,20 @@ public final class Training {
 
     }
 
-    private static ImageFolder initDataset(String datasetRoot)
-            throws IOException, TranslateException {
+    private static ImageFolder initDataset(String datasetRoot) throws IOException, TranslateException {
         ImageFolder dataset = ImageFolder.builder()
-                // retrieve the data
                 .setRepositoryPath(Paths.get(datasetRoot))
                 .optMaxDepth(10)
                 .addTransform(new Resize(Models.IMAGE_WIDTH, Models.IMAGE_HEIGHT))
                 .addTransform(new ToTensor())
-                // random sampling; don't process the data in order
-                .setSampling(BATCH_SIZE, true)
+                .setSampling(BATCH_SIZE, true)  // Ensure dataset is shuffled for training
                 .build();
-
         dataset.prepare();
         return dataset;
     }
 
     private static TrainingConfig setupTrainingConfig(Loss loss) {
-        return new DefaultTrainingConfig(loss)
+        return new DefaultTrainingConfig(Loss.softmaxCrossEntropyLoss())
                 .addEvaluator(new Accuracy())
                 .addTrainingListeners(TrainingListener.Defaults.logging());
     }
